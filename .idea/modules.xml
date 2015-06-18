@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/AppScout.iml" filepath="$PROJECT_DIR$/AppScout.iml" />
+      <module fileurl="file://$PROJECT_DIR$/appscout/appscout.iml" filepath="$PROJECT_DIR$/appscout/appscout.iml" />
+      <module fileurl="file://$PROJECT_DIR$/appscout-sample/appscout-sample.iml" filepath="$PROJECT_DIR$/appscout-sample/appscout-sample.iml" />
+    </modules>
+  </component>
+</project>
