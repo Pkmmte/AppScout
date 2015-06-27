@@ -28,4 +28,6 @@ public class AppScout {
 	private AppScout(Context context) {
 		this.context = context;
 	}
+
+	protected enum API { AUTO, LOAD, SEND }
 }
