@@ -1,17 +1,21 @@
 package com.pkmmte.appscout;
 
 class Request {
-	public final AppScout.API api;
+	public final AppScout.Api api;
+	public final boolean filter;
 
 	private Request(Builder builder) {
 		this.api = builder.api;
+		this.filter = builder.filter;
 	}
 
 	protected static class Builder {
-		private AppScout.API api;
+		private AppScout.Api api;
+		private boolean filter;
 
-		public Builder(AppScout.API api) {
+		public Builder(AppScout.Api api) {
 			this.api = api;
+			this.filter = true;
 		}
 
 		public Request build() {
