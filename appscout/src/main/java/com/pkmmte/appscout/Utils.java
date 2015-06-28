@@ -6,6 +6,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.util.DisplayMetrics;
 
@@ -13,6 +14,11 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -80,6 +86,14 @@ class Utils {
 			return resources.getDrawableForDensity(iconId, DisplayMetrics.DENSITY_XXHIGH);
 		else
 			return resources.getDrawableForDensity(iconId, DisplayMetrics.DENSITY_XHIGH);
+	}
+
+	public static <K extends Enum<K>, V> Map<K, List<V>> enumMultiMap(Class<K> type, K keys[]) {
+		final Map<K, List<V>> map = new EnumMap<>(type);
+		for (K key : keys)
+			map.put(key, Collections.synchronizedList(new ArrayList<V>()));
+
+		return Collections.unmodifiableMap(map);
 	}
 
 	/**
