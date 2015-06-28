@@ -5,7 +5,7 @@ import android.graphics.drawable.Drawable;
 /** Immutable application metadata model class. */
 public class App {
 	/** Name belonging to this application as displayed by launchers */
-	public final String name;
+	public final CharSequence name;
 
 	/** Identifier for a specific component available from this app */
 	public final String component;
@@ -55,7 +55,7 @@ public class App {
 	}
 
 	public static class Builder {
-		private String name;
+		private CharSequence name;
 		private String component;
 		private Drawable icon;
 
@@ -71,7 +71,7 @@ public class App {
 			this.icon = app.icon;
 		}
 
-		public Builder name(String name) {
+		public Builder name(CharSequence name) {
 			this.name = name;
 			return this;
 		}
