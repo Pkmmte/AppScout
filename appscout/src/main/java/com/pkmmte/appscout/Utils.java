@@ -2,11 +2,11 @@ package com.pkmmte.appscout;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.util.DisplayMetrics;
 
@@ -50,6 +50,19 @@ class Utils {
 	 */
 	public static ComponentName getComponent(App app) {
 		return new ComponentName(app.component.split("/")[0], app.component.split("/")[1]);
+	}
+
+	/**
+	 * @return A String representing the Intent's component.
+	 */
+	public static String getComponentString(Intent intent) {
+		final String launchString = intent.toString().split("cmp=")[1];
+		String component = launchString.substring(0, launchString.length() - 1);
+		String[] split = component.split("/");
+		if (split[1].startsWith("."))
+			component = split[0] + '/' + split[0] + split[1];
+
+		return component.trim();
 	}
 
 	/**

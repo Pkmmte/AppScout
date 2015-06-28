@@ -9,7 +9,7 @@ import java.util.Map;
 
 import static com.pkmmte.appscout.Utils.enumMultiMap;
 
-class RequestCreator {
+public class RequestCreator {
 	// TODO: Experimental!
 	private static final Map<AppScout.Api, List<AsyncTask>> activeThreads = enumMultiMap(AppScout.Api.class, AppScout.Api.values());
 	private static final List<AppScout.Api> activeRequests = Collections.synchronizedList(new ArrayList<AppScout.Api>());
