@@ -8,9 +8,15 @@ import android.support.annotation.NonNull;
 
 import com.pkmmte.logger.Logger;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class AppScout {
 	// For logging purposes
@@ -19,6 +25,9 @@ public class AppScout {
 	// Special logger
 	protected static final Logger logger = new Logger(TAG, Logger.Level.LOW);
 
+	// Component matcher
+	private static final Pattern pattern = Pattern.compile("^.*?\\{(.*)\\}$");
+
 	// Main singleton instance
 	private static volatile AppScout singleton = null;
 
@@ -26,7 +35,9 @@ public class AppScout {
 	private final Context context;
 
 	// Cache for loaded apps
-	private volatile List<App> installedApps = new ArrayList<>();
+	private volatile List<App> apps = new ArrayList<>();
+	private volatile List<App> appsInstalled = new ArrayList<>();
+	private volatile List<String> appsDefined = new ArrayList<>();
 
 	/**
 	 * The global default {@link AppScout} instance.
@@ -65,7 +76,7 @@ public class AppScout {
 	}
 
 	// TODO
-	protected void load(Request request) {
+	protected void load(Request request) throws IOException, XmlPullParserException {
 		logger.medium("load(" + request + ')');
 		//final CallbackHandler handler = request.handler != null ? request.handler : this.handler;
 		//final boolean safe = request.safe != null ? request.safe : this.safe;
@@ -106,10 +117,50 @@ public class AppScout {
 		}
 
 		// Replace global installed list with local list
-		installedApps = installed;
+		appsInstalled = installed;
 		logger.medium("Loaded " + installed.size() + " installed apps");
 
 		// TODO: Notify callback
+
+		// Filter apps if needed
+		if (request.filter) {
+			logger.medium("Starting appfilter loading process...");
+
+			// Create new XmlPullParser instance and set input to appfilter
+			final XmlPullParser parser = XmlPullParserFactory.newInstance().newPullParser();
+			parser.setInput(context.getAssets().open(request.appfilter), "UTF-8");
+
+			// Find the number of elements in tbe appfilter (for logging & progress)
+			final int numElements = Utils.getElementCount(context.getAssets().open(request.appfilter), "item");
+			final List<String> defined = new ArrayList<>(numElements);
+			logger.medium("Found " + numElements + " <item> elements in " + request.appfilter);
+
+			// Loop through entire appfilter to find defined components
+			int eventType = parser.getEventType();
+			while (eventType != XmlPullParser.END_DOCUMENT) {
+				if (eventType == XmlPullParser.START_TAG) {
+					try {
+						// Parse component names from <item> tags
+						final String elementName = parser.getName();
+						if (elementName != null && elementName.equals("item")) {
+							final String component = parser.getAttributeValue(null, "component");
+							if (component != null)
+								defined.add(pattern.matcher(component).replaceAll("$1"));
+						}
+					} catch (Exception e) {
+						logger.high("Error parsing appfilter item! [" + e.getMessage() + ']');
+					}
+				}
+
+				// Move on to next parsing event
+				eventType = parser.next();
+			}
+
+			// Replace global defined list with local list
+			appsDefined = defined;
+			logger.medium("Loaded " + defined.size() + " defined components");
+			logger.medium("Starting filtering process...");
+		}
 	}
 
 	protected void send(Request request) {

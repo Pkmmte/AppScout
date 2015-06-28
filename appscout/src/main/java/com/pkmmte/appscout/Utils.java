@@ -10,10 +10,13 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.DisplayMetrics;
 
+import org.xml.sax.SAXException;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -22,8 +25,31 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 /** Miscellaneous convenience methods */
 class Utils {
+
+	/**
+	 * @param stream Stream containing some sort of XML document.
+	 * @param tag Tag for which to find matching elements for.
+	 * @return The number of elements found matching the specified tag name or -1 if an exception is thrown.
+	 */
+	public static int getElementCount(InputStream stream, String tag) {
+		try {
+			return DocumentBuilderFactory.newInstance()
+					.newDocumentBuilder()
+					.parse(stream)
+					.getElementsByTagName(tag)
+					.getLength();
+		} catch (SAXException | IOException | ParserConfigurationException e) {
+			e.printStackTrace();
+			AppScout.logger.error("Could not find number of <" + tag + "> elements in stream!");
+			return -1;
+		}
+	}
+
 	/**
 	 * Deletes files one by one until the entire directory is gone.
 	 *

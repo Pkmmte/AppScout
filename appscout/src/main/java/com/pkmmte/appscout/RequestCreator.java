@@ -2,6 +2,9 @@ package com.pkmmte.appscout;
 
 import android.os.AsyncTask;
 
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +44,17 @@ public class RequestCreator {
 		return this;
 	}
 
-	public void sync() {
+	public RequestCreator appfilter(String appfilter) {
+		this.data.appfilter(appfilter);
+		return this;
+	}
+
+	public RequestCreator filter(boolean filter) {
+		this.data.filter(filter);
+		return this;
+	}
+
+	public void sync() throws IOException, XmlPullParserException {
 		final Request request = data.build();
 		switch (request.api) {
 			case AUTO:
@@ -96,7 +109,13 @@ public class RequestCreator {
 						singleton.auto(request);
 						break;
 					case LOAD:
-						singleton.load(request);
+						try {
+							singleton.load(request);
+						} catch (XmlPullParserException e) {
+							e.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 						break;
 					case SEND:
 						singleton.send(request);
